@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker build --no-cache -t autodomo/denon-microservice .
+docker build --no-cache -t robodomo/denon-microservice .

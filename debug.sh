@@ -4,4 +4,4 @@
 docker run \
     --rm \
     --name="denon-microservice" \
-    autodomo/denon-microservice
+    robodomo/denon-microservice
