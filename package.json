@@ -25,8 +25,7 @@
   },
   "homepage": "https://github.com/robodomo/denon-microservice#readme",
   "dependencies": {
-    "debug": "^2.6.8",
-    "microservice-core": "github:robodomo/microservice-core",
-    "mqtt": "^2.11.0"
+    "debug": "^2.6.9",
+    "microservice-core": "github:robodomo/microservice-core"
   }
 }
