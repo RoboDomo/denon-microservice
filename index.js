@@ -1,8 +1,10 @@
 // denon-microservice
 
 process.env.DEBUG = "DenonHost";
+process.title = process.env.TITLE || "denon-microservice";
 
 const debug = require("debug")("DenonHost"),
+  console = require("console"),
   net = require("net"),
   HostBase = require("microservice-core/HostBase");
 
@@ -64,23 +66,19 @@ class DenonHost extends HostBase {
       this.connect();
     });
     debug("connecting", this.host, this.host);
-    this.socket.connect(
-      23,
-      this.host,
-      () => {
-        debug("CONNECTED", this.host);
-        this.write("SI?");
-        this.write("PW?");
-        this.write("MU?");
-        this.write("MV?");
-        this.write("SD?");
-        this.write("MS?");
-        this.write("PS?");
-        this.write("MN?");
-        this.write("CV?");
-        this.write("SV?");
-      }
-    );
+    this.socket.connect(23, this.host, () => {
+      debug("CONNECTED", this.host);
+      this.write("SI?");
+      this.write("PW?");
+      this.write("MU?");
+      this.write("MV?");
+      this.write("SD?");
+      this.write("MS?");
+      this.write("PS?");
+      this.write("MN?");
+      this.write("CV?");
+      this.write("SV?");
+    });
     this.socket.on("data", data => {
       this.buffer += data.toString();
       // debug(this.host, 'data', this.buffer, '\n')
@@ -149,9 +147,9 @@ function main() {
     console.log("ENV variable DENON_HOSTS not found");
     process.exit(1);
   }
-  DENON_HOSTS.forEach(host => {
+  for (const host of DENON_HOSTS) {
     receivers[host] = new DenonHost(host);
-  });
+  }
 }
 
 main();
