@@ -1,6 +1,6 @@
 // denon-microservice
 
-process.env.DEBUG = "DenonHost";
+process.env.DEBUG = "HostBase,DenonHost";
 process.title = process.env.TITLE || "denon-microservice";
 
 const debug = require("debug")("DenonHost"),
@@ -127,6 +127,10 @@ class DenonHost extends HostBase {
   }
 
   command(key, cmd) {
+    console.log("command", this.host, key, cmd);
+    if (cmd === "PWOFF") {
+      cmd = "PWSTANDBY";
+    }
     this.write(cmd);
     if (cmd === "MUOFF") {
       this.handleResponse("MUOFF");
