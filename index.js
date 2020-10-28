@@ -37,7 +37,7 @@ const events = {
   SD: "SD",
   DC: "DC",
   SV: "SV",
-  MS: "MS"
+  MS: "MS",
   // MU:    'mute',
   // SI:    'inputSource',
   // SD:    'inputMode',
@@ -52,6 +52,7 @@ class DenonHost extends HostBase {
     super(MQTT_HOST, TOPIC_ROOT + "/" + host);
 
     this.host = host;
+    this.si = "OFF";
     this.connect();
   }
 
@@ -59,7 +60,7 @@ class DenonHost extends HostBase {
     this.socket = new net.Socket();
     this.socket.setEncoding("ascii");
     this.buffer = "";
-    this.socket.on("error", err => {
+    this.socket.on("error", (err) => {
       debug(this.host, "error", err.message);
       this.socket.end();
       this.socket = null;
@@ -79,7 +80,7 @@ class DenonHost extends HostBase {
       this.write("CV?");
       this.write("SV?");
     });
-    this.socket.on("data", data => {
+    this.socket.on("data", (data) => {
       this.buffer += data.toString();
       // debug(this.host, 'data', this.buffer, '\n')
       while (this.buffer.indexOf("\r") !== -1) {
@@ -95,7 +96,7 @@ class DenonHost extends HostBase {
   }
 
   handleResponse(line) {
-    debug(this.host, "handleResoonse", line);
+    // debug(this.host, "handleResoonse", line);
     const state = Object.assign({}, this.state || {});
 
     for (const key in events) {
@@ -105,11 +106,12 @@ class DenonHost extends HostBase {
           state[value] = line.substr(key.length).replace(/^\s+/, "");
           this.state = state;
           return;
-        } else {
-          value(state, line.substr(key.length).replace(/^\s+/, ""));
-          this.state = state;
-          return;
         }
+        // else {
+        //   value(state, line.substr(key.length).replace(/^\s+/, ""));
+        //   this.state = state;
+        //   return;
+        // }
       }
     }
     // debug('unhandled', line)
@@ -136,6 +138,12 @@ class DenonHost extends HostBase {
       this.handleResponse("MUOFF");
     } else if (cmd === "MUON") {
       this.handleResponse("MUON");
+    } else if (cmd === "PWON") {
+      this.write("SI?");
+      this.publish("SI", this.state.SI);
+    } else if (cmd === "PWOFF") {
+      this.publish("PW", "OFF");
+      // this.state = { SI: "OFF"};
     }
   }
 }
